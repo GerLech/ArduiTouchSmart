@@ -46,9 +46,15 @@ void TFTWidgetButton::init(const char properties[]) {
   _h = _height*BLOCKSIZE;
   _x = _posx*BLOCKSIZE;
   _y = _posy * BLOCKSIZE + _yOffset;
+  Serial.print("New Button:");
   Serial.println(properties);
   StaticJsonDocument <1500>doc;
-  deserializeJson(doc, properties);
+  DeserializationError   error = deserializeJson(doc,properties);
+  if (error ) {
+    Serial.println("JSON new button: ");
+    Serial.println(properties);
+    Serial.println(error.c_str());
+  }
   if (strcmp(_label,"")==0) strlcpy(_label,"Button",50);
   if (doc.containsKey("onColor")) _onColor = doc["onColor"];
   if (doc.containsKey("offColor")) _offColor = doc["offColor"];
@@ -75,7 +81,11 @@ void TFTWidgetButton::update(Adafruit_ILI9341 * tft, const char data[], bool dis
   char buf[200];
   strlcpy(buf,data,200);
   StaticJsonDocument <200>doc;
-  deserializeJson(doc, buf);
+  DeserializationError   error = deserializeJson(doc,buf);
+  if (error ) {
+    Serial.println("JSON update button: ");
+    Serial.println(error.c_str());
+  }
   if (doc.containsKey(_valName)) _value = (strcmp(doc[_valName],"ON")==0)?1:0;
   if (display) drawValue(tft);
 }
@@ -129,13 +139,17 @@ void TFTWidgetButton::setStatus(uint8_t status) {
 }
 
 bool TFTWidgetButton::toPublish() {
-  return ((_status == ST_CHANGED) || (_status == ST_NEW)) ;
+  return ((_status == ST_CHANGED) ) ;
 }
 
 String TFTWidgetButton::getProperties() {
   char buffer[1000];
   StaticJsonDocument<1000> doc;
-  deserializeJson(doc,getBaseProperties());
+  DeserializationError   error = deserializeJson(doc,getBaseProperties());
+  if (error ) {
+    Serial.println("JSON set button properties: ");
+    Serial.println(error.c_str());
+  }
   doc["type"] = WT_BUTTON;
   doc["onColor"] = _onColor;
   doc["offColor"] = _offColor;

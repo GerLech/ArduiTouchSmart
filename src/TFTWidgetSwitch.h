@@ -20,6 +20,7 @@ protected:
 public:
   TFTWidgetSwitch(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const char name[], const char properties[], uint16_t yOffset, const GFXfont * font);
   TFTWidgetSwitch(const char properties[], uint16_t yOffset, const GFXfont * font);
+
   void init(const char properties[]);
   void draw(Adafruit_ILI9341 * tft);
   void update(Adafruit_ILI9341 * tft, const char data[], bool display);

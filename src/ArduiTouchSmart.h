@@ -1,3 +1,5 @@
+//Version 1.1
+
 #ifndef ArduiTouchSmart_h
 #define ArduiTouchSmart_h
 

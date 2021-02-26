@@ -54,9 +54,15 @@ void TFTWidgetSimple::init(const char properties[]){
   if (_width<4) _width=4; if (_width>12) _width=12;
   if (_height<3) _height=3; if (_height>5) _height=5;
   _w = _width*BLOCKSIZE; _h = _height*BLOCKSIZE;
-  StaticJsonDocument <1500>doc;
+  Serial.print("New Simple:");
   Serial.println(properties);
-  deserializeJson(doc, properties);
+  StaticJsonDocument <1500>doc;
+  DeserializationError   error = deserializeJson(doc,properties);
+  if (error ) {
+    Serial.println("JSON new simple: ");
+    Serial.println(properties);
+    Serial.println(error.c_str());
+  }
   if (strcmp(_label,"")==0) strlcpy(_label,"Simple",50);
   if (doc.containsKey("minCol")) _minColor = doc["minCol"];
   if (doc.containsKey("maxCol")) _maxColor = doc["maxCol"];
@@ -83,7 +89,11 @@ void TFTWidgetSimple::update(Adafruit_ILI9341 * tft, const char data[], bool dis
   char buf[200];
   strlcpy(buf,data,200);
   StaticJsonDocument <200>doc;
-  deserializeJson(doc, buf);
+  DeserializationError   error = deserializeJson(doc,buf);
+  if (error ) {
+    Serial.println("JSON update simple: ");
+    Serial.println(error.c_str());
+  }
   if (doc.containsKey(_unitName)) strlcpy(_unit,doc[_unitName],5);
   if (doc.containsKey(_valName)) _value = doc[_valName];
   if (display) {
@@ -130,7 +140,11 @@ void TFTWidgetSimple::drawValue(Adafruit_ILI9341 * tft){
 String TFTWidgetSimple::getProperties() {
   char buffer[1000];
   StaticJsonDocument<1000> doc;
-  deserializeJson(doc,getBaseProperties());
+  DeserializationError   error = deserializeJson(doc,getBaseProperties());
+  if (error ) {
+    Serial.println("JSON set simple properties: ");
+    Serial.println(error.c_str());
+  }
   doc["type"] = WT_SIMPLE;
   doc["minCol"] = _minColor;
   doc["maxCol"] = _maxColor;

@@ -40,9 +40,15 @@ void TFTWidgetSlider::init(const char properties[]) {
   if (_height>4) _height=4;
   if (_height<3) _height=3;
   _w = _width*BLOCKSIZE; _h = _height*BLOCKSIZE;
-  StaticJsonDocument <1500>doc;
+  Serial.print("New Slider:");
   Serial.println(properties);
-  deserializeJson(doc, properties);
+  StaticJsonDocument <1500>doc;
+  DeserializationError   error = deserializeJson(doc,properties);
+  if (error ) {
+    Serial.println("JSON new slider: ");
+    Serial.println(properties);
+    Serial.println(error.c_str());
+  }
   if (strcmp(_label,"")==0) strlcpy(_label,"Slider",50);
   if (doc.containsKey("min")) _min = doc["min"];
   if (doc.containsKey("max")) _max = doc["max"];
@@ -62,7 +68,11 @@ void TFTWidgetSlider::update(Adafruit_ILI9341 * tft, const char data[], bool dis
   char buf[200];
   strlcpy(buf,data,200);
   StaticJsonDocument <200>doc;
-  deserializeJson(doc, buf);
+  DeserializationError   error = deserializeJson(doc,buf);
+  if (error ) {
+    Serial.println("JSON update slider: ");
+    Serial.println(error.c_str());
+  }
   if (doc.containsKey(_valName)) _value = doc[_valName];
   if (display) {
     deleteOld(tft);
@@ -120,13 +130,17 @@ void TFTWidgetSlider::setStatus(uint8_t status) {
 }
 
 bool TFTWidgetSlider::toPublish() {
-  return ((_status == ST_CHANGED) || (_status == ST_NEW)) ;
+  return ((_status == ST_CHANGED)) ;
 }
 
 String TFTWidgetSlider::getProperties() {
   char buffer[1000];
   StaticJsonDocument<1000> doc;
-  deserializeJson(doc,getBaseProperties());
+  DeserializationError   error = deserializeJson(doc,getBaseProperties());
+  if (error ) {
+    Serial.println("JSON set slider properties: ");
+    Serial.println(error.c_str());
+  }
   doc["type"] = WT_SLIDER;
   doc["min"] = _min;
   doc["max"] = _max;

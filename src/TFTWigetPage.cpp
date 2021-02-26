@@ -44,12 +44,18 @@ Error TFTWidgetPage::addWidget(uint8_t x, uint8_t y, uint8_t width, uint8_t heig
 Error TFTWidgetPage::addWidget(const char style[] ){
   Error err = Error::NO_ERROR;
   if (_cnt >= MAXWIDGETS) err = Error::NO_MORE_WIDGETS;
-  StaticJsonDocument<500> doc;
-  deserializeJson(doc,style);
+  StaticJsonDocument<1500> doc;
+  DeserializationError   error = deserializeJson(doc,style);
+  if (error ) {
+    Serial.println("JSON Page add widget: ");
+    Serial.println(style);
+    Serial.println(error.c_str());
+  }
   if (!doc.containsKey("type"))  {
     err = Error::NO_TYPE;
   } else {
     uint8_t type = doc["type"];
+    Serial.print("Add to page ");
     Serial.println(style);
     Serial.printf("Type %i added\n",type );
     uint8_t last = _cnt;

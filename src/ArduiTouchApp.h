@@ -466,7 +466,11 @@ void setupArduiTouch() {
       f.close();
       if (data.length() > 0);
       {
-        deserializeJson(doc, data);
+        DeserializationError   error = deserializeJson(doc,data);
+        if (error ) {
+          Serial.println("JSON calibration: ");
+          Serial.println(error.c_str());
+        }
         Serial.print("calibration: ");
         Serial.println(data);
         xMin = doc["xMin"];

@@ -535,7 +535,11 @@ void ArduiTouchSmart::showPageChangeDialog(){
 
 void ArduiTouchSmart::changePage(String data){
   StaticJsonDocument<300> doc;
-  deserializeJson(doc,data);
+  DeserializationError   error = deserializeJson(doc,data);
+  if (error ) {
+    Serial.println("JSON change page: ");
+    Serial.println(error.c_str());
+  }
   uint8_t ziel = doc["pag"];
   if ((ziel != _currentPage) && (_pages[ziel]->getWidgetCount()<MAXWIDGETS)) {
     int16_t ix = _pages[_currentPage]->getSelectedIndex();

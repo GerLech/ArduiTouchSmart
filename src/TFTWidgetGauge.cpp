@@ -79,9 +79,15 @@ void TFTWidgetGauge::init(const char properties[]) {
     case 11: _radius = 70; _margin=20; _textwidth=100; break;
     case 12: _radius = 80; _margin=20; _textwidth=100; break;
   }
-  StaticJsonDocument <1500>doc;
+  Serial.print("New Gauge:");
   Serial.println(properties);
-  deserializeJson(doc, properties);
+  StaticJsonDocument <1500>doc;
+  DeserializationError   error = deserializeJson(doc,properties);
+  if (error ) {
+    Serial.println("JSON new gauge: ");
+    Serial.println(properties);
+    Serial.println(error.c_str());
+  }
   if (strcmp(_label,"")==0) strlcpy(_label,"Gauge",50);
   if (doc.containsKey("pointer")) _pointerColor = doc["pointer"];
   if (doc.containsKey("bow")) _bowColor = doc["bow"];
@@ -116,7 +122,11 @@ void TFTWidgetGauge::update(Adafruit_ILI9341 * tft, const char data[], bool disp
   char buf[200];
   strlcpy(buf,data,200);
   StaticJsonDocument <200>doc;
-  deserializeJson(doc, buf);
+  DeserializationError   error = deserializeJson(doc,buf);
+  if (error ) {
+    Serial.println("JSON update gauge: ");
+    Serial.println(error.c_str());
+  }
   if (doc.containsKey(_unitName)) strlcpy(_unit,doc[_unitName],5);
   if (doc.containsKey(_valName)) _value = doc[_valName];
   if (_value < _min) _value = _min;
@@ -151,7 +161,11 @@ void TFTWidgetGauge::drawValue(Adafruit_ILI9341 * tft){
 String TFTWidgetGauge::getProperties() {
   char buffer[1000];
   StaticJsonDocument<1000> doc;
-  deserializeJson(doc,getBaseProperties());
+  DeserializationError   error = deserializeJson(doc,getBaseProperties());
+  if (error ) {
+    Serial.println("JSON set gauge properties: ");
+    Serial.println(error.c_str());
+  }
   doc["type"] = WT_GAUGE;
   doc["pointer"] = _pointerColor;
   doc["bow"] = _bowColor;

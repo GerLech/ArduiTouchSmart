@@ -35,9 +35,15 @@ void TFTWidgetColorSlider::init(const char properties[]) {
   if (_height>6) _height=6;
   if (_height<5) _height=5;
   _w = _width*BLOCKSIZE; _h = _height*BLOCKSIZE;
-  StaticJsonDocument <1500>doc;
+  Serial.print("New Colorslider:");
   Serial.println(properties);
-  deserializeJson(doc, properties);
+  StaticJsonDocument <1500>doc;
+  DeserializationError   error = deserializeJson(doc,properties);
+  if (error ) {
+    Serial.println("JSON new colorslider: ");
+    Serial.println(properties);
+    Serial.println(error.c_str());
+  }
   if (strcmp(_label,"")==0) strlcpy(_label,"ColorSlider",50);
   if (doc.containsKey("red")) _red = doc["red"];
   if (doc.containsKey("green")) _green = doc["green"];
@@ -142,14 +148,18 @@ void TFTWidgetColorSlider::setStatus(uint8_t status) {
 }
 
 bool TFTWidgetColorSlider::toPublish() {
-  return ((_status == ST_CHANGED) || (_status == ST_NEW)) ;
+  return ((_status == ST_CHANGED)) ;
 }
 
 
 String TFTWidgetColorSlider::getProperties() {
   char buffer[1000];
   StaticJsonDocument<1000> doc;
-  deserializeJson(doc,getBaseProperties());
+  DeserializationError   error = deserializeJson(doc,getBaseProperties());
+  if (error ) {
+    Serial.println("JSON set colorslider properties: ");
+    Serial.println(error.c_str());
+  }
   doc["type"] = WT_COLORSLIDER;
   doc["min"] = _min;
   doc["max"] = _max;

@@ -71,9 +71,15 @@ void TFTWidgetColorbar::init(const char properties[]){
   _h = _height*BLOCKSIZE;
   _x = _posx*BLOCKSIZE;
   _y = _posy * BLOCKSIZE + _yOffset;
+  Serial.print("New Colorbar:");
   Serial.println(properties);
   StaticJsonDocument <1500>doc;
-  deserializeJson(doc, properties);
+  DeserializationError   error = deserializeJson(doc,properties);
+  if (error ) {
+    Serial.println("JSON new Colorbar: ");
+    Serial.println(properties);
+    Serial.println(error.c_str());
+  }
   if (strcmp(_label,"")==0) strlcpy(_label,"Colorbar",50);
   if (doc.containsKey("minCol")) _minColor = doc["minCol"];
   if (doc.containsKey("maxCol")) _maxColor = doc["maxCol"];
@@ -178,7 +184,11 @@ void TFTWidgetColorbar::drawValue(Adafruit_ILI9341 * tft){
 String TFTWidgetColorbar::getProperties() {
   char buffer[1000];
   StaticJsonDocument<1000> doc;
-  deserializeJson(doc,getBaseProperties());
+  DeserializationError   error = deserializeJson(doc,getBaseProperties());
+  if (error ) {
+    Serial.println("JSON set colorbar properties: ");
+    Serial.println(error.c_str());
+  }
   doc["type"] = WT_COLORBAR;
   doc["minCol"] = _minColor;
   doc["maxCol"] = _maxColor;

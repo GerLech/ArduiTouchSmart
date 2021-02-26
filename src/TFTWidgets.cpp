@@ -87,10 +87,10 @@ Widget::Widget(const char json[]) {
 }
 
 void Widget::setBaseProperties(String properties) {
-  StaticJsonDocument <500>doc;
+  StaticJsonDocument <1500>doc;
   DeserializationError   error = deserializeJson(doc,properties);
   if (error ) {
-    Serial.print("JSON: ");
+    Serial.print("JSON widget: ");
     Serial.println(error.c_str());
   }
   if (doc.containsKey("xposition")) _posx = doc["xposition"];

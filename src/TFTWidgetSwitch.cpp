@@ -54,9 +54,15 @@ void TFTWidgetSwitch::init(const char properties[]){
   if (_height>4) _height=4;
   if (_height<3) _height=3;
   _w = _width*BLOCKSIZE; _h = _height*BLOCKSIZE;
-  StaticJsonDocument <1500>doc;
+  Serial.print("New Switch:");
   Serial.println(properties);
-  deserializeJson(doc, properties);
+  StaticJsonDocument <1500>doc;
+  DeserializationError   error = deserializeJson(doc,properties);
+  if (error ) {
+    Serial.println("JSON new switch: ");
+    Serial.println(properties);
+    Serial.println(error.c_str());
+  }
   if (strcmp(_label,"")==0) strlcpy(_label,"Switch",50);
   if (doc.containsKey("onColor")) _onColor = doc["onColor"];
   if (doc.containsKey("offColor")) _offColor = doc["offColor"];
@@ -93,7 +99,11 @@ void TFTWidgetSwitch::update(Adafruit_ILI9341 * tft, const char data[], bool dis
   char buf[200];
   strlcpy(buf,data,200);
   StaticJsonDocument <200>doc;
-  deserializeJson(doc, buf);
+  DeserializationError   error = deserializeJson(doc,buf);
+  if (error ) {
+    Serial.println("JSON update switchn: ");
+    Serial.println(error.c_str());
+  }
   if (doc.containsKey(_valName)) _value = (strcmp(doc[_valName],"ON")==0)?1:0;
   if (display) {
     deleteOld(tft);
@@ -146,13 +156,17 @@ void TFTWidgetSwitch::setStatus(uint8_t status) {
 }
 
 bool TFTWidgetSwitch::toPublish() {
-  return ((_status == ST_CHANGED) || (_status == ST_NEW)) ;
+  return ((_status == ST_CHANGED)) ;
 }
 
 String TFTWidgetSwitch::getProperties() {
   char buffer[1000];
   StaticJsonDocument<1000> doc;
-  deserializeJson(doc,getBaseProperties());
+  DeserializationError   error = deserializeJson(doc,getBaseProperties());
+  if (error ) {
+    Serial.println("JSON set switch properties: ");
+    Serial.println(error.c_str());
+  }
   doc["type"] = WT_SWITCH;
   doc["onColor"] = _onColor;
   doc["offColor"] = _offColor;
