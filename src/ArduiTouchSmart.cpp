@@ -501,6 +501,7 @@ uint8_t ArduiTouchSmart::loadAllPages() {
   dir = SPIFFS.open("/wdgconf","r");
   if (dir) {
     f = dir.openNextFile();
+    Serial.printf("Load file %s size = %i\n",f.name,f.size);
     while (f) {
       fName = f.name();
       sscanf(fName.c_str(),"/wdgconf/p %i /w %i",&page,&widget);
