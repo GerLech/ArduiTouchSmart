@@ -21,7 +21,8 @@ String newwidgetform = "["
   "{'v':'3','l':'Knopf'},"
   "{'v':'4','l':'Schieber'},"
   "{'v':'5','l':'Schalter'},"
-  "{'v':'6','l':'Farb Wähler'}"
+  "{'v':'6','l':'Farb Wähler'},"
+  "{'v':'7','l':'Alarm'}"
   "]"
   "},"
   "{"
@@ -382,12 +383,19 @@ void ArduiTouchSmart::registerOnExternCommand(void(*callback)(uint8_t button)){
 }
 
 
+void ArduiTouchSmart::registerOnAlarm(void(*callback)(uint16_t level)){
+  _onAlarm = callback;
+}
+
+
 void ArduiTouchSmart::timeEvent(bool connected, bool showTime){
   if ((millis() - _lts) > 100) {
     _lts = millis();
     if ((_cnt > 0) && (_currentPage < _cnt)) _pages[_currentPage]->checkForPublish();
     _timcnt++;
     if (connected && _header && showTime && (_timcnt > 10)) displayTime();
+    _alarmcnt++;
+    if (_alarmcnt > 9) everySecond();
   }
 }
 
@@ -475,6 +483,29 @@ uint8_t ArduiTouchSmart::savePage(uint8_t pagenum) {
   } else {
     return -1;
   }
+}
+
+void ArduiTouchSmart::everySecond() {
+  uint16_t level = 0;
+  uint16_t lv = 0;
+  uint8_t pg = 0;
+  for (uint8_t i = 0 ; i<_cnt; i++) _pages[i]->everySecond((i == _currentPage));
+  for (uint8_t i = 0 ; i<_cnt; i++) {
+    lv = _pages[i]->hasAlarm(level & 0xf);
+    if (lv & 0x10) pg = i;
+    level += lv;
+  }
+  if (_onAlarm && (level != _lastAlarm)) {
+    Serial.printf("Alarm callback old %i new %i\n",_lastAlarm, level);
+    _onAlarm(level & 0xf);
+    if (level & 0x10) {
+      _currentPage = pg;
+      _pages[_currentPage]->drawPage();
+      if (_footer) drawFootBar();
+    }
+    _lastAlarm = level;
+  }
+  _alarmcnt = 0;
 }
 
 uint8_t ArduiTouchSmart::saveAllPages() {

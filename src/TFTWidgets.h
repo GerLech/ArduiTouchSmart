@@ -36,6 +36,7 @@ Dependencies:
 #define WT_SLIDER 4
 #define WT_SWITCH 5
 #define WT_COLORSLIDER 6
+#define WT_ALARM 7
 
 
 enum class Error : uint8_t {
@@ -118,6 +119,8 @@ public:
   virtual bool touchEvent(Adafruit_ILI9341 * tft, int16_t x, int16_t y, EV event)  {return false;};
   virtual bool toPublish() {return false;};
   virtual int16_t getValue() {return 0;};
+  virtual void everySecond(Adafruit_ILI9341 * tft, boolean display) {};
+  virtual uint16_t hasAlarm(uint16_t level) {return level;};
   virtual void setStatus(uint8_t status){};
   virtual bool hasTopic(char topic[]);
   String getBaseEditForm();

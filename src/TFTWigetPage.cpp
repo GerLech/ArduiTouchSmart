@@ -36,6 +36,7 @@ Error TFTWidgetPage::addWidget(uint8_t x, uint8_t y, uint8_t width, uint8_t heig
       case WT_SWITCH: _widgets[_cnt] = new TFTWidgetSwitch(x,y,width,height,name,style,_yOffset,_font) ; _cnt++; break;
       case WT_BUTTON: _widgets[_cnt] = new TFTWidgetButton(x,y,width,height,name,style,_yOffset,_font) ; _cnt++; break;
       case WT_COLORSLIDER: _widgets[_cnt] = new TFTWidgetColorSlider(x,y,width,height,name,style,_yOffset,_font) ; _cnt++; break;
+      case WT_ALARM: _widgets[_cnt] = new TFTWidgetAlarm(x,y,width,height,name,style,_yOffset,_font) ; _cnt++; break;
     }
   }
   return err;
@@ -68,6 +69,7 @@ Error TFTWidgetPage::addWidget(const char style[] ){
         case WT_SWITCH: _widgets[_cnt] = new TFTWidgetSwitch(style,_yOffset,_font) ; _cnt++; break;
         case WT_BUTTON: _widgets[_cnt] = new TFTWidgetButton(style,_yOffset,_font) ; _cnt++; break;
         case WT_COLORSLIDER: _widgets[_cnt] = new TFTWidgetColorSlider(style,_yOffset,_font) ; _cnt++; break;
+        case WT_ALARM: _widgets[_cnt] = new TFTWidgetAlarm(style,_yOffset,_font) ; _cnt++; break;
       }
     }
   }
@@ -131,6 +133,7 @@ void TFTWidgetPage::editWidget(bool base){
       _conf->setDescription(_widgets[i]->getExtraEditForm());
     }
     _conf->setValues(_widgets[i]->getProperties());
+    Serial.println("set props done");
     _conf->showForm();
     _onEdit = i;
   }
@@ -212,6 +215,20 @@ uint8_t TFTWidgetPage::savePage(uint8_t pagenum){
     file.close();
   }
 }
+
+void TFTWidgetPage::everySecond(boolean isCurrent) {
+  for (uint8_t i = 0; i< _cnt; i++){
+    _widgets[i]->everySecond(_tft,((_onEdit < 0) && isCurrent));
+  }
+}
+
+uint16_t TFTWidgetPage::hasAlarm(uint16_t level) {
+  for (uint8_t i = 0; i< _cnt; i++){
+    level = _widgets[i]->hasAlarm(level);
+  }
+  return level;
+}
+
 
 String TFTWidgetPage::getGeometrie(uint8_t index) {
   if (index < _cnt) {

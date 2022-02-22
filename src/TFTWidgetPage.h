@@ -9,6 +9,7 @@
 #include <TFTWidgetGauge.h>
 #include <TFTWidgetColorbar.h>
 #include <TFTWidgetSimple.h>
+#include <TFTWidgetAlarm.h>
 #include <TFTWidgetSlider.h>
 #include <TFTWidgetSwitch.h>
 #include <TFTWidgetButton.h>
@@ -41,7 +42,8 @@ public:
   String getGeometrie(uint8_t index);
   Widget * releaseWidget(uint8_t index);
   void appendWidget(Widget * widget);
-
+  void everySecond(boolean isCurrent);
+  uint16_t hasAlarm(uint16_t level);
 
 
 private:

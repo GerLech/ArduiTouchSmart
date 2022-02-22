@@ -52,6 +52,7 @@ public:
   const char * getTopic(uint8_t index);
   void registerOnPublish(bool (*callback)(const char * topic, const char * message));
   void registerOnExternCommand(void(*callback)(uint8_t button));
+  void registerOnAlarm(void(*callback)(uint16_t level));
   void timeEvent(bool connected, bool showTime);
   void setFormat(bool header, bool footer);
   void endEdit(String data);
@@ -73,6 +74,7 @@ private:
   void deleteAllWidgets();
   void showPageChangeDialog();
   void changePage(String data);
+  void everySecond();
   TFTWidgetPage * _pages[MAXPAGES];
   uint8_t _cnt = 0;
   uint8_t _currentPage = 0;
@@ -84,13 +86,16 @@ private:
   const GFXfont * _font;
   bool _header = true;
   bool _footer = true;
+  uint16_t _lastAlarm = 0;
   uint8_t _confMode = 0;
   uint8_t _currentForm = FRM_NONE;
   char _error[25] = "";
   uint8_t _timcnt = 0;
+  uint16_t _alarmcnt = 0;
   uint32_t _lts = 0;
   bool(*_onPublish)(const char * topic, const char * message) = NULL;
   void(*_onExternCommand)(uint8_t button) = NULL;
+  void(*_onAlarm)(uint16_t level) = NULL;
 };
 
 #endif
