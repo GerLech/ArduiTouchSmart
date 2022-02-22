@@ -489,7 +489,7 @@ void ArduiTouchSmart::everySecond() {
   uint16_t level = 0;
   uint16_t lv = 0;
   uint8_t pg = 0;
-  for (uint8_t i = 0 ; i<_cnt; i++) _pages[i]->everySecond((i == _currentPage));
+  for (uint8_t i = 0 ; i<_cnt; i++) _pages[i]->everySecond((i == _currentPage) && (_currentForm == FRM_NONE));
   for (uint8_t i = 0 ; i<_cnt; i++) {
     lv = _pages[i]->hasAlarm(level & 0xf);
     if (lv & 0x10) pg = i;
