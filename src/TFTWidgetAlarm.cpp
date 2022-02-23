@@ -139,7 +139,7 @@ void TFTWidgetAlarm::update(Adafruit_ILI9341 * tft, const char data[], bool disp
     case 0: _status = (_value < _min)?ALSTAT_WAIT:ALSTAT_IDLE; _waitcnt = _duration; break;
     case 1: _status = (_value > _max)?ALSTAT_WAIT:ALSTAT_IDLE; _waitcnt = _duration; break;
     case 2: _status = ((_value > _min) && (_value < _max))?ALSTAT_WAIT:ALSTAT_IDLE; _waitcnt = _duration; break;
-    case 3: _status = ((_value < _min) && (_value > _max))?ALSTAT_WAIT:ALSTAT_IDLE; _waitcnt = _duration; break;
+    case 3: _status = ((_value < _min) || (_value > _max))?ALSTAT_WAIT:ALSTAT_IDLE; _waitcnt = _duration; break;
   }
   //Serial.printf("%f %f Status = %i\n",_value,_min,_status );
   if (display && (_status != oldStatus)) {
