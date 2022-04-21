@@ -166,9 +166,11 @@ Error ArduiTouchSmart::addPage(){
 
 }
 
-void ArduiTouchSmart::nextPage() {
-  if ((_currentPage+1) < (_cnt)) {
+void ArduiTouchSmart::nextPage(boolean cyclic) {
+  if (((_currentPage+1) < _cnt) || (cyclic && (_cnt > 0))) {
     _currentPage++;
+    if (_currentPage >= _cnt) _currentPage = 0;
+    Serial.printf("Change page to %i\n",_currentPage);
     _pages[_currentPage]->drawPage();
     if (_footer) drawFootBar();
   }
@@ -263,6 +265,9 @@ bool ArduiTouchSmart::touchEvent(int16_t x, int16_t y, EV event) {
 }
 */
 
+uint8_t ArduiTouchSmart::getConfMode() {
+  return _confMode;
+}
 
 bool ArduiTouchSmart::touchEvent(int16_t x, int16_t y, EV event) {
   Serial.printf("Position: x=%i  y=%i\n",x,y);

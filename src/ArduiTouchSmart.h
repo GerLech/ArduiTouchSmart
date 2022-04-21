@@ -33,6 +33,7 @@ public:
   void removePage(uint8_t index);
   uint8_t getPageCount();
   uint8_t getCurrentPage();
+  uint8_t getConfMode();
 
 
   //This functions are the same as on TFTWidgetPage and will be called with the current page
@@ -56,7 +57,7 @@ public:
   void timeEvent(bool connected, bool showTime);
   void setFormat(bool header, bool footer);
   void endEdit(String data);
-  void nextPage();
+  void nextPage(boolean cyclic = false);
   void previousPage();
   uint8_t savePage(uint8_t pagenum);
   uint8_t saveAllPages();
