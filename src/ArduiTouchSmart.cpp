@@ -166,11 +166,21 @@ Error ArduiTouchSmart::addPage(){
 
 }
 
-void ArduiTouchSmart::nextPage(boolean cyclic) {
-  if (((_currentPage+1) < _cnt) || (cyclic && (_cnt > 0))) {
+void ArduiTouchSmart::nextPage(boolean cyclic, uint8_t maxPage) {
+  uint8_t max = _cnt;
+  if ((maxPage != 0) && (maxPage < _cnt)) max = maxPage;
+  if (((_currentPage+1) < max) || (cyclic && (max > 0))) {
     _currentPage++;
-    if (_currentPage >= _cnt) _currentPage = 0;
+    if (_currentPage >= max) _currentPage = 0;
     Serial.printf("Change page to %i\n",_currentPage);
+    _pages[_currentPage]->drawPage();
+    if (_footer) drawFootBar();
+  }
+}
+
+void ArduiTouchSmart::setCurrentPage(uint8_t page){
+  if (page < _cnt) {
+    _currentPage = page;
     _pages[_currentPage]->drawPage();
     if (_footer) drawFootBar();
   }
@@ -215,11 +225,15 @@ void ArduiTouchSmart::drawPage(){
 }
 
 Error ArduiTouchSmart::addWidget(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t type, const char name[], const char style[] ){
-  if ((_cnt > 0) && (_currentPage < _cnt)) _pages[_currentPage]->addWidget(x,y,width,height,type,name,style);
+  Error err = Error::NO_ERROR;
+  if ((_cnt > 0) && (_currentPage < _cnt)) err = _pages[_currentPage]->addWidget(x,y,width,height,type,name,style);
+  return err;
 }
 
 Error ArduiTouchSmart::addWidget(const char style[] ){
+  Error err = Error::NO_ERROR;
   if ((_cnt > 0) && (_currentPage < _cnt)) _pages[_currentPage]->addWidget(style);
+  return err;
 }
 
 
@@ -357,6 +371,7 @@ bool ArduiTouchSmart::toolbarEvent(int16_t x, int16_t y) {
       break;
     case CMD_EXCHANGE: showPageChangeDialog(); break;
   }
+  return flag;
 }
 
 bool ArduiTouchSmart::footbarEvent(int16_t x, int16_t y) {
@@ -525,20 +540,25 @@ uint8_t ArduiTouchSmart::saveAllPages() {
     }
   }
   for (uint8_t i = 0 ; i<_cnt; i++) savePage(i);
+  return 0;
 
 }
 
 uint8_t ArduiTouchSmart::loadAllPages() {
   //first remove all old data
+  Serial.printf("Load all pages from %i\n",_cnt);
   for (uint8_t i = 0; i<_cnt; i++) removePage(i);
   File dir,f;
   uint8_t page,widget;
   String fName, props;
   dir = SPIFFS.open("/wdgconf","r");
+  fName = dir.name();
   if (dir) {
+    Serial.printf("Found %s\n",fName.c_str());
     f = dir.openNextFile();
     while (f) {
       fName = f.name();
+      Serial.printf("Found file %s\n",fName.c_str());
       sscanf(fName.c_str(),"/wdgconf/p %i /w %i",&page,&widget);
       Serial.printf("Seite %i Widget % i\n",page,widget);
       props = f.readString();
@@ -551,6 +571,8 @@ uint8_t ArduiTouchSmart::loadAllPages() {
     _currentPage = 0;
     drawPage();
   }
+  Serial.println("Load all pages done");
+  return _cnt;
 }
 
 void ArduiTouchSmart::showPageChangeDialog(){

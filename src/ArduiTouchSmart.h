@@ -33,6 +33,7 @@ public:
   void removePage(uint8_t index);
   uint8_t getPageCount();
   uint8_t getCurrentPage();
+  void setCurrentPage(uint8_t page);
   uint8_t getConfMode();
 
 
@@ -57,7 +58,7 @@ public:
   void timeEvent(bool connected, bool showTime);
   void setFormat(bool header, bool footer);
   void endEdit(String data);
-  void nextPage(boolean cyclic = false);
+  void nextPage(boolean cyclic = false, uint8_t maxPage = 0);
   void previousPage();
   uint8_t savePage(uint8_t pagenum);
   uint8_t saveAllPages();
