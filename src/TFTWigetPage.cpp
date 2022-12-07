@@ -37,6 +37,7 @@ Error TFTWidgetPage::addWidget(uint8_t x, uint8_t y, uint8_t width, uint8_t heig
       case WT_BUTTON: _widgets[_cnt] = new TFTWidgetButton(x,y,width,height,name,style,_yOffset,_font) ; _cnt++; break;
       case WT_COLORSLIDER: _widgets[_cnt] = new TFTWidgetColorSlider(x,y,width,height,name,style,_yOffset,_font) ; _cnt++; break;
       case WT_ALARM: _widgets[_cnt] = new TFTWidgetAlarm(x,y,width,height,name,style,_yOffset,_font) ; _cnt++; break;
+      case WT_CHART: _widgets[_cnt] = new TFTWidgetChart(x,y,width,height,name,style,_yOffset,_font) ; _cnt++; break;
     }
   }
   return err;
@@ -70,6 +71,7 @@ Error TFTWidgetPage::addWidget(const char style[] ){
         case WT_BUTTON: _widgets[_cnt] = new TFTWidgetButton(style,_yOffset,_font) ; _cnt++; break;
         case WT_COLORSLIDER: _widgets[_cnt] = new TFTWidgetColorSlider(style,_yOffset,_font) ; _cnt++; break;
         case WT_ALARM: _widgets[_cnt] = new TFTWidgetAlarm(style,_yOffset,_font) ; _cnt++; break;
+        case WT_CHART: _widgets[_cnt] = new TFTWidgetChart(style,_yOffset,_font) ; _cnt++; break;
       }
     }
   }
@@ -114,6 +116,7 @@ bool TFTWidgetPage::touchEvent(int16_t x, int16_t y, EV event) {
 
 bool TFTWidgetPage::selectWidget(int16_t x, int16_t y) {
   for (uint8_t i = 0; i<_cnt; i++) _widgets[i]->select(x,y,_tft);
+  return true;
 }
 
 int16_t TFTWidgetPage::getSelectedIndex() {
@@ -210,10 +213,12 @@ uint8_t TFTWidgetPage::savePage(uint8_t pagenum){
   File file;
   for (uint8_t i = 0; i< _cnt; i++){
     sprintf(buf,"/wdgconf/p%i/w%i",pagenum,i);
+    Serial.printf("Save File %s\n", buf);
     file = SPIFFS.open(buf,"w+");
     file.print(_widgets[i]->getProperties());
     file.close();
   }
+  return 0;
 }
 
 void TFTWidgetPage::everySecond(boolean isCurrent) {

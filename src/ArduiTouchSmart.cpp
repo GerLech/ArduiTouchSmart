@@ -22,7 +22,8 @@ String newwidgetform = "["
   "{'v':'4','l':'Schieber'},"
   "{'v':'5','l':'Schalter'},"
   "{'v':'6','l':'Farb Wähler'},"
-  "{'v':'7','l':'Alarm'}"
+  "{'v':'7','l':'Alarm'},"
+  "{'v':'8','l':'Chart'}"
   "]"
   "},"
   "{"
@@ -151,7 +152,6 @@ ArduiTouchSmart::ArduiTouchSmart(Adafruit_ILI9341 * tft, TFTForm * conf, const G
   _footer = footer;
   addMenu(mainmenu);
 }
-
 
 Error ArduiTouchSmart::addPage(){
   Error err = Error::NO_ERROR;
@@ -535,7 +535,7 @@ uint8_t ArduiTouchSmart::saveAllPages() {
   if (dir){
     f=dir.openNextFile();
     while (f) {
-      SPIFFS.remove(f.name());
+      SPIFFS.remove(f.path());
       f=dir.openNextFile();
     }
   }
@@ -551,21 +551,21 @@ uint8_t ArduiTouchSmart::loadAllPages() {
   File dir,f;
   uint8_t page,widget;
   String fName, props;
-  dir = SPIFFS.open("/wdgconf","r");
-  fName = dir.name();
+  dir = SPIFFS.open("/","r");
   if (dir) {
-    Serial.printf("Found %s\n",fName.c_str());
     f = dir.openNextFile();
     while (f) {
-      fName = f.name();
-      Serial.printf("Found file %s\n",fName.c_str());
-      sscanf(fName.c_str(),"/wdgconf/p %i /w %i",&page,&widget);
-      Serial.printf("Seite %i Widget % i\n",page,widget);
-      props = f.readString();
-      Serial.print("Props:");
-      Serial.println(props);
-      if (page > (_cnt-1)) addPage();
-      _pages[_currentPage]->addWidget(props.c_str());
+      fName = f.path();
+      if (strncmp(fName.c_str(),"/wdgconf/",9) == 0) {
+        Serial.printf("Found file %s\n",fName.c_str());
+        sscanf(fName.c_str(),"/wdgconf/p %i /w %i",&page,&widget);
+        Serial.printf("Seite %i Widget % i\n",page,widget);
+        props = f.readString();
+        Serial.print("Props:");
+        Serial.println(props);
+        if (page > (_cnt-1)) addPage();
+        _pages[_currentPage]->addWidget(props.c_str());
+      }
       f = dir.openNextFile();
     }
     _currentPage = 0;

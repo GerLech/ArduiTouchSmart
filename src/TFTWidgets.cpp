@@ -162,7 +162,7 @@ void Widget::centerText(Adafruit_ILI9341 * tft, char text[], int16_t x, int16_t 
   tft->print(tmp);
 }
 
-String Widget::unicodeToDisplay(String text){
+String Widget::unicodeToDisplay(String text, bool ascii){
   String res = "";
   uint8_t i = 0;
   char c;
@@ -171,18 +171,18 @@ String Widget::unicodeToDisplay(String text){
     if (c==195) { //UTF8 deutsche Umlaute
       i++;
       switch (text[i]) {
-        case 164: c=130; break; //ä
-        case 182: c=131; break; //ö
-        case 188: c=132; break; //ü
-        case 159: c=133; break; //ß
-        case 132: c=127; break; //Ä
-        case 150: c=128; break; //Ö
-        case 156: c=129; break; //Ü
+        case 164: c=ascii?132:130; break; //ä
+        case 182: c=ascii?148:131; break; //ö
+        case 188: c=ascii?129:132; break; //ü
+        case 159: c=ascii?225:133; break; //ß
+        case 132: c=ascii?142:127; break; //Ä
+        case 150: c=ascii?153:128; break; //Ö
+        case 156: c=ascii?154:129; break; //Ü
         default: c=0;
       }
     } else if (c == 194) { //UTF8 Zeichen für Grad Symbol
       i++;
-      if (text[i] == 176) c=134; else c=0;
+      if (text[i] == 176) c=ascii?248:134; else c=0;
     } else if (c > 128) { //normale Zeichen werden nicht verändert
       c=0;
     }

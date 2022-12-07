@@ -1,4 +1,4 @@
-//Version 1.1
+//Version 1.7
 
 #ifndef ArduiTouchSmart_h
 #define ArduiTouchSmart_h
@@ -8,7 +8,7 @@
 #include <Adafruit_GFX.h>
 #include <TFTicons.h>
 
-
+#define ATSVERSION "v1.7"
 #define MAXPAGES 20
 #define MAXMENUS 5
 
@@ -35,6 +35,7 @@ public:
   uint8_t getCurrentPage();
   void setCurrentPage(uint8_t page);
   uint8_t getConfMode();
+  const char * getVersion() {return ATSVERSION;};
 
 
   //This functions are the same as on TFTWidgetPage and will be called with the current page

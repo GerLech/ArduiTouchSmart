@@ -14,6 +14,7 @@
 #include <TFTWidgetSwitch.h>
 #include <TFTWidgetButton.h>
 #include <TFTWidgetColorSlider.h>
+#include <TFTWidgetChart.h>
 #include <TFTForm.h>
 
 class TFTWidgetPage{

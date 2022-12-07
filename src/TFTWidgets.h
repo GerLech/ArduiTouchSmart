@@ -37,6 +37,7 @@ Dependencies:
 #define WT_SWITCH 5
 #define WT_COLORSLIDER 6
 #define WT_ALARM 7
+#define WT_CHART 8
 
 
 enum class Error : uint8_t {
@@ -96,7 +97,7 @@ protected:
   void centerValue(Adafruit_ILI9341 * tft, int16_t value, int16_t x, int16_t y, int16_t w, int16_t h, const char * unit );
   void centerValue(Adafruit_ILI9341 * tft, float value, int16_t x, int16_t y, int16_t w, int16_t h, uint8_t decimals, const char * unit);
   bool isInside(int16_t x, int16_t y);
-  String unicodeToDisplay(String text);
+  String unicodeToDisplay(String text, bool  ascii = false);
 public:
   //the position and size of a widget is set. Units are blocks of 40 pixels
   //every widget defines the height based on width. If the width is to small
